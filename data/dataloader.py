@@ -5,7 +5,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from utils.pc_utils import (farthest_point_sample_np, scale_to_unit_cube, jitter_pointcloud,
                             rotate_shape, random_rotate_one_axis)
-from .pd_vec import get_pd_vector
+#from .pd_vec import get_pd_vector
 #from gudhi.representations.vector_methods import TopologicalVector
 from ripser import Rips
 import torch
