@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 from utils.pc_utils import (farthest_point_sample_np, scale_to_unit_cube, jitter_pointcloud,
                             rotate_shape, random_rotate_one_axis)
 from .pd_vec import get_pd_vector
-from gudhi.representations.vector_methods import TopologicalVector
+#from gudhi.representations.vector_methods import TopologicalVector
 from ripser import Rips
 import torch
 
@@ -127,7 +127,7 @@ class ModelNet(Dataset):
             self.val_ind = np.asarray([i for i in range(self.num_examples) if i % 10 >= 8]).astype(np.int)
             np.random.shuffle(self.val_ind)
 
-        self.get_centroid("/home/rexma/Desktop/JesseSun/pcsll/data/k16mn10.txt")
+        self.get_centroid("./k16mn10.txt")
 
         io.cprint("number of " + partition + " examples in modelnet : " + str(len(self.pc_list)))
         unique, counts = np.unique(self.label, return_counts=True)

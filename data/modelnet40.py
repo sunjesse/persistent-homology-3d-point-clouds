@@ -61,7 +61,7 @@ def jitter_pointcloud(pointcloud, sigma=0.01, clip=0.02):
     return pointcloud
 
 def save_pc_as_npy(data, label, idx, split):
-    root = "/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data/modelnet40/"+str(label)
+    root = "./PointDA_data/modelnet40/"+str(label)
     if not os.path.exists(root):
         os.mkdir(root)
     if not os.path.exists(root+"/"+split):

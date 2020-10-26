@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "../train.py", line 12, in <module>
+    import utils.log
+  File "/project/6035453/sunjesse/pcsll/utils/log.py", line 7, in <module>
+    from data.dataloader import label_to_idx
+  File "/project/6035453/sunjesse/pcsll/data/dataloader.py", line 3, in <module>
+    import h5py
+ModuleNotFoundError: No module named 'h5py'

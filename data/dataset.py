@@ -14,8 +14,8 @@ import h5py
 from glob import glob
 import numpy as np
 import torch.utils.data as data
-from gudhi.representations.vector_methods import TopologicalVector
-import gudhi
+#from gudhi.representations.vector_methods import TopologicalVector
+#import gudhi
 from perslocsig import compute_geodesic_persistence_diagrams as gpd
 from ripser import Rips
 import pervect
@@ -23,7 +23,7 @@ import sys
 
 shapenetpart_seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 4, 2, 6, 2, 3, 3, 3, 3]
 shapenetpart_seg_start_index = [0, 4, 6, 8, 12, 16, 19, 22, 24, 28, 30, 36, 38, 41, 44, 47]
-
+'''
 def get_pd_vector(npy, rips, TV, dim=256, setBool=True):
     D = rips.fit_transform(npy)
     H0, H1 = D[0], D[1]
@@ -38,9 +38,9 @@ def get_pd_vector(npy, rips, TV, dim=256, setBool=True):
     #print(diag)
     vects = TV(v1)
     return vects
-
+'''
 def save_pc_as_npy(data, label, idx, split):
-    root = "/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data/shapenetcorev2/"+str(label)
+    root = "./PointDA_data/shapenetcorev2/"+str(label)
     if not os.path.exists(root):
         os.mkdir(root)
     if not os.path.exists(root+"/"+split):
@@ -144,7 +144,7 @@ class Dataset(data.Dataset):
             self.seg_num_all = 50
             self.seg_start_index = 0
 
-        self.get_centroid("/home/rexma/Desktop/JesseSun/pcsll/data/k16snv2.txt")
+        self.get_centroid("./k16snv2.txt")
 
     def get_centroid(self, txt):
         with open(txt, 'r') as r:

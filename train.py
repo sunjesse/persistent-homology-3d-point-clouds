@@ -131,7 +131,7 @@ data_func = {'modelnet40': ModelNet40, 'modelnet': ModelNet, 'scannet': ScanNet,
 #train_ind = np.array([i for i in range(len(src_trainset)) if i % 4 == 0]).astype(np.int)
 #train_sampler = SubsetRandomSampler(train_ind)
 
-src_trainset = Dataset(root="/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data", dataset_name='shapenetcorev2', num_points=1024, split="train")
+src_trainset = Dataset(root="./PointDA_data", dataset_name='shapenetcorev2', num_points=1024, split="train")
 #src_trainset = Dataset(root="/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data", dataset_name='modelnet', num_points=2048, split="test")
 
 # dataloaders for source and target
