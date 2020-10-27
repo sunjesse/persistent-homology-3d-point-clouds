@@ -1,0 +1,16 @@
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=2048, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=2048, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=2048, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=2048, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=2048, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=2048, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Namespace(batch_size=32, class_choice=None, dataset='shapenetpart', dropout=0.5, emb_dims=1024, epochs=200, eval=False, exp_name='exp', k=40, lr=0.001, model='dgcnn', model_path='', momentum=0.9, no_cuda=False, num_points=1024, scheduler='cos', seed=1, test_batch_size=16, use_sgd=True)
+Using GPU : 0 from 2 devices
+Train 0, loss: 1.746315, train acc: 0.828184, train avg acc: 0.428851, train iou: 0.673470
+Test 0, loss: 1.556811, test acc: 0.882380, test avg acc: 0.579442, test iou: 0.745072

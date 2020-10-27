@@ -16,8 +16,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
-from data import ShapeNetPart
-from model import DGCNN_partseg
+from datafile import ShapeNetPart
+from models import DGCNN_partseg
 import numpy as np
 from torch.utils.data import DataLoader
 from util import cal_loss, IOStream
@@ -72,7 +72,7 @@ def train(args, io):
     test_loader = DataLoader(ShapeNetPart(partition='test', num_points=args.num_points, class_choice=args.class_choice), 
                             num_workers=8, batch_size=args.test_batch_size, shuffle=True, drop_last=False)
     
-    device = torch.device("cuda" if args.cuda else "cpu")
+    device = torch.device("cuda:0" if args.cuda else "cpu")
 
     #Try to load models
     seg_num_all = train_loader.dataset.seg_num_all
@@ -81,10 +81,10 @@ def train(args, io):
         model = DGCNN_partseg(args, seg_num_all).to(device)
     else:
         raise Exception("Not implemented")
-    print(str(model))
+    #print(str(model))
 
-    model = nn.DataParallel(model)
-    print("Let's use", torch.cuda.device_count(), "GPUs!")
+    #model = nn.DataParallel(model)
+    print("Let's use", str(1), "GPUs!")
 
     if args.use_sgd:
         print("Use SGD")
@@ -305,7 +305,7 @@ if __name__ == "__main__":
                         help='random seed (default: 1)')
     parser.add_argument('--eval', type=bool,  default=False,
                         help='evaluate the model')
-    parser.add_argument('--num_points', type=int, default=2048,
+    parser.add_argument('--num_points', type=int, default=1024,
                         help='num of points to use')
     parser.add_argument('--dropout', type=float, default=0.5,
                         help='dropout rate')
