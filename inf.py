@@ -153,7 +153,8 @@ src_test_loader = DataLoader(src_testset, num_workers=NWORKERS, batch_size=args.
 if args.model == 'pointnet':
     model = PointNet(args)
 elif args.model == 'dgcnn':
-    model = DGCNN(args, output_channels=32, inf=True)
+    print(args.emb_dims)
+    model = DGCNN(args, output_channels=64, inf=True)
 else:
     raise Exception("Not implemented")
 

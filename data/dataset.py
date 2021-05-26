@@ -14,33 +14,58 @@ import h5py
 from glob import glob
 import numpy as np
 import torch.utils.data as data
-#from gudhi.representations.vector_methods import TopologicalVector
-#import gudhi
+from gudhi.representations.vector_methods import TopologicalVector
+import gudhi
 from perslocsig import compute_geodesic_persistence_diagrams as gpd
 from ripser import Rips
 import pervect
 import sys
+#import ripser-plusplus.python.ripser_plusplus_python as rpp
+#import importlib  
+#rpp = importlib.import_module("ripser-plusplus.python.ripser_plusplus_python")
 
 shapenetpart_seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 4, 2, 6, 2, 3, 3, 3, 3]
 shapenetpart_seg_start_index = [0, 4, 6, 8, 12, 16, 19, 22, 24, 28, 30, 36, 38, 41, 44, 47]
-'''
+
+def persistent_entropy(dgm,dim, inf = False, valInf = np.float(0.0)):
+    # From a diagram generated using ripser, this function computes its persistent
+    # entropy. If inf = True, this mean that we want to keep infinity bars. Therefore,
+    # it is important to give a value to the infinity valInf. To keep stability,
+    # the value must be the same for all persistence diagram we are comparing.
+    if inf == False:
+        dgm = dgm[dim][dgm[dim][:,1]<np.inf]
+        l = dgm[:,1]-dgm[:,0]
+        L = np.sum(l)
+        p = l/L
+        E = -np.sum(p*np.log(p))
+    else:
+        dgm_valInf = dgm
+        dgm_valInf[dim][dgm_valInf[dim][:,1]==np.inf]=np.array([0,valInf])
+        l = dgm_valInf[dim][:,1]-dgm_valInf[dim][:,0]
+        L = np.sum(l)
+        p = l/L
+        E = -np.sum(p*np.log(p))
+    return E
+
 def get_pd_vector(npy, rips, TV, dim=256, setBool=True):
     D = rips.fit_transform(npy)
-    H0, H1 = D[0], D[1]
-    ref = gudhi.representations.preprocessing.ProminentPoints(use=True, num_pts=25)
+    e0 = persistent_entropy(D, 0)
+    e1 = persistent_entropy(D, 1)
+    e2 = persistent_entropy(D, 2)
+    '''
     v1 = ref(H1)
-    #print(v1)
-    v1 = np.log(1+v1)
-    #print(v1)
-    #rips_complex = gudhi.RipsComplex(points=d, max_edge_length=0.5)
-    #simplex_tree = rips_complex.create_simplex_tree(max_dimension=3)
-    #diag = simplex_tree.persistence(min_persistence=0.1)
-    #print(diag)
-    vects = TV(v1)
+    v = np.concatenate((v0, v1), axis=0)
+    v = np.log(1+v)
+    vects = TV(v)
+    '''
+    vects = np.array([e0, e1, e2])
     return vects
-'''
+
 def save_pc_as_npy(data, label, idx, split):
-    root = "./PointDA_data/shapenetcorev2/"+str(label)
+    folder = "./PointDA_data/shapenetcorev2_entropy_dim2"
+    root = os.path.join(folder, str(label))
+    if not os.path.exists(folder):
+        os.mkdir(folder)
     if not os.path.exists(root):
         os.mkdir(root)
     if not os.path.exists(root+"/"+split):
@@ -144,7 +169,7 @@ class Dataset(data.Dataset):
             self.seg_num_all = 50
             self.seg_start_index = 0
 
-        self.get_centroid("./k16snv2.txt")
+        self.get_centroid("/home/rexma/Desktop/JesseSun/pcsll/data/clusters/k32_entropy.txt")
 
     def get_centroid(self, txt):
         with open(txt, 'r') as r:
@@ -204,12 +229,15 @@ class Dataset(data.Dataset):
         if self.random_translate:
             point_set = translate_pointcloud(point_set)
 
-        label = np.copy(self.centroid[file[:-4]])
+        label = np.copy(self.centroid[file[:-4]]) 
         # convert numpy array to pytorch Tensor
         point_set = torch.from_numpy(point_set)
         label = torch.from_numpy(np.array([label]).astype(np.int64))
         label = label.squeeze(0)
         
+        #d = os.path.join("/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data/shapenetcorev2", name, "train", file.replace("/","_")[:-4]+"_pd.npy")
+        #label = np.load(d)
+        #label = torch.from_numpy(label)
 
         if self.segmentation:
             seg = self.seg[item]
@@ -223,8 +251,12 @@ class Dataset(data.Dataset):
 
 
 if __name__ == '__main__':
+    from gtda.homology import VietorisRipsPersistence
+    from gtda.diagrams import PersistenceEntropy
+    import faiss
+
     root = os.getcwd() + "/PointDA_data"
-    rips = Rips()
+    rips = Rips(maxdim=2)
     TV = TopologicalVector(threshold=-1)
 
     # choose dataset name from 'shapenetcorev2', 'shapenetpart', 'modelnet40' and 'modelnet10'
@@ -234,14 +266,76 @@ if __name__ == '__main__':
     # only shapenetcorev2 and shapenetpart dataset support 'trainval' and 'val'
     split = 'train'
 
-    d = Dataset(root=root, dataset_name=dataset_name, num_points=2048, split="train")
+    d = Dataset(root=root, dataset_name=dataset_name, num_points=512, split="train")
     print("datasize:", d.__len__())
-    ps, lb, n, f = d[0]
-
-    for item in range(len(d)):
+    #ps, lb, n, f = d[0]
+    y = []
+    nm = []
+    fts = []
+    c = 0
+    #VR = VietorisRipsPersistence(homology_dimensions=(0, 1))
+    #PE = PersistenceEntropy()
+    step = 10
+    #while c < len(d) or c-step < len(d):
+    #X = []
+    ofile = open("./entropy_sn55.txt", 'a')
+    started = False
+    for item in range(0, len(d)):
         ps, lb, n, f = d[item]
-        '''
-        print(ps.size(), lb, n, f)
-        v = get_pd_vector(ps.numpy(), rips, TV)
-        save_pc_as_npy(v, n, f, "train")
-        '''
+        if f[:-4] != "02691156_371a609f050b4ed3f6497dc58a9a6f8a" and not started:
+            print("Skipped! " + f[:-4])
+            continue
+        elif f[:-4] == "02691156_371a609f050b4ed3f6497dc58a9a6f8a" and not started:
+            started = True
+            print("Skipped! " + f[:-4])
+            print("DONEEEEEEEEEEEEEE")
+            continue
+
+        path = os.path.join("./PointDA_data/shapenetcorev2_entropy_dim2", str(n), split, f[:-4]+"_pd.npy")
+        if os.path.exists(path):
+            print("Skipped " + f[:-4])
+            try:
+                ens = np.load(path, allow_pickle=True)
+                ofile.write(str(n)+"/"+f[:-4] + " " +  str(ens[0]) + " "  + str(ens[1]) + " " + str(ens[2]) + '\n')
+            except:
+                v = get_pd_vector(ps, rips, TV)
+                ofile.write(str(n)+"/"+f[:-4] + " " + str(v[0]) + " " + str(v[1]) + " " + str(v[2]) + '\n')
+                print("Wrote", f[:-4])
+            continue
+
+        #diagrams = VR.fit_transform([ps])
+        #features = PE.fit_transform(diagrams)
+        #save_pc_as_npy(features, n, f, split)
+        v = get_pd_vector(ps, rips, TV)
+        ofile.write(str(n)+"/"+f[:-4] + " " + str(v[0]) + " " + str(v[1]) + " " + str(v[2]) + '\n')
+        print("Wrote", f[:-4])
+        #save_pc_as_npy(v, n, f, split)
+    '''
+        #X.append(ps)
+        #y.append(lb)
+        #nm.append(f.replace("_", "/"))
+    #c += step
+
+        #if idx > 3:
+        #    break
+        #print(ps.size(), lb, n, f)
+        #v = get_pd_vector(ps, rips, TV)
+        #save_pc_as_npy(v, n, f, split)
+
+        diagrams = VR.fit_transform(X)
+        features = PE.fit_transform(diagrams)
+        fts.append(features)
+        print("Done writing " + "c = " + str(c))
+    
+    features = np.concatenate(fts, axis=0)
+    print(features.shape)
+    features = np.array(features, order='C').astype(np.float32)
+    kmeans = faiss.Kmeans(features.shape[1], 32, niter=20, verbose=True)
+    kmeans.train(features)
+    dists, labels = kmeans.index.search(features, 1)
+
+    with open("./clusters/pe_h2_32.txt", 'a') as o:
+        for i in range(len(y)):
+            #print(str(y[i]), str(labels[i]))
+            o.write(nm[i]+ " " +  str(labels[i][0]) + "\n")
+    '''

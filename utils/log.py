@@ -28,8 +28,8 @@ class IOStream():
     def close(self):
         self.f.close()
 
-    def save_model(self, model):
-        path = self.path + '/model.pt'
+    def save_model(self, model, epoch=0):
+        path = self.path + '/model' + str(epoch) + '.pt'
         best_model = copy.deepcopy(model)
         torch.save(model.state_dict(), path)
         return best_model

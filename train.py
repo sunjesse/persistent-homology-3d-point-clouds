@@ -123,15 +123,15 @@ src_dataset = args.src_dataset
 #trgt_dataset = args.trgt_dataset
 data_func = {'modelnet40': ModelNet40, 'modelnet': ModelNet, 'scannet': ScanNet, 'shapenet': ShapeNet}
 
-#src_trainset = ModelNet40(2048, 'train')
-#src_testset = ModelNet40(2048, 'test') 
+#src_trainset = ModelNet40(1024, 'train')
+#src_testset = ModelNet40(1024, 'test') 
 
 # Creating data indices for training and validation splits:
 #src_train_sampler, src_valid_sampler = split_set(src_trainset, src_dataset, "source")
 #train_ind = np.array([i for i in range(len(src_trainset)) if i % 4 == 0]).astype(np.int)
 #train_sampler = SubsetRandomSampler(train_ind)
 
-src_trainset = Dataset(root="./PointDA_data", dataset_name='shapenetcorev2', num_points=1024, split="train")
+src_trainset = Dataset(root="/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data", dataset_name='shapenetcorev2', num_points=args.emb_dims, split="train")
 #src_trainset = Dataset(root="/home/rexma/Desktop/JesseSun/pcsll/data/PointDA_data", dataset_name='modelnet', num_points=2048, split="test")
 
 # dataloaders for source and target
@@ -230,7 +230,7 @@ def test(test_loader, model=None, set_type="Target", partition="Val", epoch=0):
 # ==================
 src_best_val_acc = trgt_best_val_acc = best_val_epoch = 0
 src_best_val_loss = trgt_best_val_loss = MAX_LOSS
-best_model = io.save_model(model)
+best_model = io.save_model(model, 0)
 
 for epoch in range(args.epochs):
     model.train()
@@ -285,6 +285,7 @@ for epoch in range(args.epochs):
 
             src_count += batch_size
             #print(src_count)
+        
 
         #### target data ####
         '''
@@ -304,6 +305,8 @@ for epoch in range(args.epochs):
         '''
         opt.step()
         batch_idx += 1
+        #if batch_idx % 128 == 0:
+        #   print(str(batch_idx))
 
     scheduler.step()
     #print("Epoch[" + str(epoch) + "] MSE: " + str(src_print_losses['total']))
@@ -313,8 +316,8 @@ for epoch in range(args.epochs):
     src_acc = io.print_progress("Source", "Trn", epoch, src_print_losses)
     #trgt_print_losses = {k: v * 1.0 / trgt_count for (k, v) in trgt_print_losses.items()}
     #trgt_acc = io.print_progress("Target", "Trn", epoch, trgt_print_losses)
-    if (epoch + 1) % 60 == 0:
-        best_model = io.save_model(model)
+    if (epoch + 1) % 60 == 0 or ((epoch + 1) >= 120 and (epoch + 1) % 5 == 0):
+        best_model = io.save_model(model, epoch+1)
         print("Saved model!")
 
     '''
